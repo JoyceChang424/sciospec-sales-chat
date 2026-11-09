@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Sciospec Sales Assistant</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #f6f7f9;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    #n8n-chat {
+      width: 100%;
+      height: 100vh;
+    }
+
+    :root {
+      --chat--color-primary: #20263a;
+      --chat--color-primary-shade-50: #181d2d;
+      --chat--color-primary-shade-100: #121624;
+
+      --chat--color-secondary: #586579;
+      --chat--color-secondary-shade-50: #4c586b;
+
+      --chat--color-white: #ffffff;
+      --chat--color-light: #f6f7f9;
+      --chat--color-light-shade-50: #eef0f3;
+      --chat--color-light-shade-100: #dfe3e8;
+      --chat--color-medium: #c7ccd4;
+      --chat--color-dark: #20263a;
+
+      --chat--spacing: 1rem;
+      --chat--border-radius: 10px;
+
+      --chat--window--width: 100%;
+      --chat--window--height: 100%;
+    }
+
+    .chat-window-wrapper {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="n8n-chat"></div>
+
+  <script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+  const params = new URLSearchParams(window.location.search);
+  const caseId = params.get('case_id');
+
+if (!caseId) {
+  console.warn('No case_id found in URL');
+}
+
+  const caseApiUrl =
+    `https://n8n.intern.sciospec.com/webhook/sales-chat-case?case_id=${encodeURIComponent(caseId)}`;
+
+  let caseData = {};
+
+try {
+  const response = await fetch(caseApiUrl);
+
+  if (!response.ok) {
+    throw new Error(`Failed to load case: ${response.status}`);
+  }
+
+  caseData = await response.json();
+} catch (error) {
+  console.error('Could not load case context:', error);
+
+  caseData = {
+    customer: '',
+    customer_company: '',
+    email_subject: '',
+    customer_inquiry: 'Case context could not be loaded.',
+    email_draft: ''
+  };
+}
+
+  const cleanDraft = (caseData.email_draft || '')
+    .replace(/<p>&nbsp;<\/p>/gi, '\n\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/&#x20;/gi, ' ')
+    .replace(/&#10;/gi, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\*\*/g, '')
+    .trim();
+
+  const openingMessage =
+`Current inquiry
+
+Customer: ${caseData.customer || ''}
+Company: ${caseData.customer_company || ''}
+Subject: ${caseData.email_subject || ''}
+
+Inquiry summary:
+${caseData.customer_inquiry || ''}
+
+Current draft:
+${cleanDraft}
+
+You can review or refine this draft here.`;
+
+  createChat({
+    webhookUrl:
+      'https://n8n.intern.sciospec.com/webhook/6611a24b-938b-4c25-b6b6-744f67e189b6/chat',
+
+    target: '#n8n-chat',
+    mode: 'fullscreen',
+    showWelcomeScreen: false,
+
+    metadata: {
+      case_id: caseId
+    },
+
+    initialMessages: [
+      openingMessage
+    ],
+
+    i18n: {
+      en: {
+        title: 'Sciospec Sales Assistant',
+        subtitle: 'Review and refine the current inquiry draft.',
+        footer: '',
+        getStarted: 'New conversation',
+        inputPlaceholder: 'Ask about this inquiry or refine the draft...'
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
