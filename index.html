@@ -124,10 +124,9 @@ Customer: ${caseData.customer || ''}
 Company: ${caseData.customer_company || ''}
 Subject: ${caseData.email_subject || ''}
 
-Inquiry summary:
-${caseData.customer_inquiry || ''}
+Inquiry summary: ${caseData.customer_inquiry || ''}
 
-Current draft:
+Current draft:\n
 ${cleanDraft}${ciBlock}
 
 You can review or refine this draft here.`;
