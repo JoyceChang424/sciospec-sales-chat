@@ -97,7 +97,9 @@ try {
     customer_company: '',
     email_subject: '',
     customer_inquiry: 'Case context could not be loaded.',
-    email_draft: ''
+    email_draft: '',
+    ci_score: '',
+    ci_reason:''
   };
 }
 
@@ -110,6 +112,11 @@ try {
     .replace(/\*\*/g, '')
     .trim();
 
+  // Only included when the field is non-empty (whitespace-only counts as empty)
+  const ci_score = String(caseData.ci_score || '').trim();
+  const ci_reason = String(caseData.ci_reason || '').trim();
+  const ciBlock = draftNote ? `\n\nConfidence Score of Draft:${ci_score}\nConfidence Score Reasoning:${ci_reason}` : '';
+
   const openingMessage =
 `Current inquiry
 
@@ -121,7 +128,7 @@ Inquiry summary:
 ${caseData.customer_inquiry || ''}
 
 Current draft:
-${cleanDraft}
+${cleanDraft}${ciBlock}
 
 You can review or refine this draft here.`;
 
