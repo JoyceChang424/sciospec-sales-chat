@@ -99,7 +99,7 @@ try {
     customer_inquiry: 'Case context could not be loaded.',
     email_draft: '',
     ci_score: '',
-    ci_reason:''
+    ci_reason: ''
   };
 }
 
@@ -113,20 +113,18 @@ try {
     .trim();
 
   // Only included when the field is non-empty (whitespace-only counts as empty)
-  const ci_score = String(caseData.ci_score || '').trim();
-  const ci_reason = String(caseData.ci_reason || '').trim();
-  const ciBlock = draftNote ? `\n\nConfidence Score of Draft:${ci_score}\nConfidence Score Reasoning:${ci_reason}` : '';
+  const ciBlock = ci_score ? `\n\n<strong>Confidence Score of Draftr</strong>:${caseData.ci_score}\n<strong>Confidence Score Reasoningr</strong>:${caseData.ci_reason}` : '';
 
   const openingMessage =
 `Current inquiry
 
-Customer: ${caseData.customer || ''}
-Company: ${caseData.customer_company || ''}
-Subject: ${caseData.email_subject || ''}
+<strong>Customer</strong>: ${caseData.customer || ''}
+<strong>Company</strong>: ${caseData.customer_company || ''}
+<strong>Subject</strong>: ${caseData.email_subject || ''}
 
-Inquiry summary: ${caseData.customer_inquiry || ''}
+<strong>Inquiry summary</strong>: ${caseData.customer_inquiry || ''}
 
-Current draft:\n
+<strong>Reply draft:\n\n
 ${cleanDraft}${ciBlock}
 
 You can review or refine this draft here.`;
