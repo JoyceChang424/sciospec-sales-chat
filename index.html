@@ -59,6 +59,10 @@
       max-width: none !important;
       max-height: none !important;
     }
+    .chat-message strong {
+      font-weight: 800;      /* heavier than the default 600/700 */
+      color: #000;         /* or var(--chat--color-dark) for full contrast */
+    }
   </style>
 </head>
 
@@ -113,21 +117,21 @@ try {
     .trim();
 
   // Only included when the field is non-empty (whitespace-only counts as empty)
-  const ciBlock = ci_score ? `\n\n<strong>Confidence Score of Draftr</strong>:${caseData.ci_score}\n<strong>Confidence Score Reasoningr</strong>:${caseData.ci_reason}` : '';
+  const ciBlock = caseData.ci_score ? `\n\n**Confidence Score of Draft**: ${caseData.ci_score}  \n**Confidence Score Reasoning**: ${caseData.ci_reason}` : '';
 
   const openingMessage =
 `Current inquiry
 
-<strong>Customer</strong>: ${caseData.customer || ''}
-<strong>Company</strong>: ${caseData.customer_company || ''}
-<strong>Subject</strong>: ${caseData.email_subject || ''}
+**Customer**: ${caseData.customer || ''}, ${caseData.customer_company || ''}
 
-<strong>Inquiry summary</strong>: ${caseData.customer_inquiry || ''}
+**Subject**: ${caseData.email_subject || ''}
 
-<strong>Reply draft:\n\n
+**Inquiry summary**: ${caseData.customer_inquiry || ''}
+
+**Reply draft:**\n\n
 ${cleanDraft}${ciBlock}
 
-You can review or refine this draft here.`;
+**You can review or refine this draft here.**`;
 
   createChat({
     webhookUrl:
